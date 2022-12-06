@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.1.0, SVG Export Plug-In  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+]>
+<svg version="1.1"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="250px" height="250px" viewBox="0 0 250 250" overflow="visible" enable-background="new 0 0 250 250"
+	 xml:space="preserve">
+<defs>
+</defs>
+<rect display="none" fill="#262721" width="250" height="250"/>
+<g>
+	<radialGradient id="SVGID_1_" cx="183.6562" cy="81.9585" r="24.4477" gradientUnits="userSpaceOnUse">
+		<stop  offset="0" style="stop-color:#F8F8F1"/>
+		<stop  offset="1" style="stop-color:#6EC7DC"/>
+	</radialGradient>
+	<polygon fill="url(#SVGID_1_)" points="180.156,107.208 180.156,88.021 163.54,97.615 160.04,91.553 176.656,81.959 
+		160.038,72.365 163.538,66.303 180.156,75.897 180.156,56.708 187.156,56.708 187.156,75.897 203.774,66.303 207.274,72.365 
+		190.656,81.959 207.272,91.553 203.772,97.615 187.156,88.021 187.156,107.208 	"/>
+	<path fill="#6EC7DC" d="M186.156,57.708v16.457v3.464l3-1.732l14.252-8.229l2.5,4.33l-14.252,8.229l-3,1.732l3,1.732l14.25,8.228
+		l-2.5,4.33l-14.25-8.228l-3-1.732v3.464v16.455h-5V89.753v-3.464l-3,1.732l-14.25,8.228l-2.5-4.33l14.25-8.228l3-1.732l-3-1.732
+		l-14.252-8.229l2.5-4.33l14.252,8.229l3,1.732v-3.464V57.708H186.156 M188.156,55.708h-9v18.457l-15.984-9.229l-4.5,7.794
+		l15.984,9.229l-15.982,9.228l4.5,7.794l15.982-9.228v18.455h9V89.753l15.982,9.228l4.5-7.794l-15.982-9.228l15.984-9.229
+		l-4.5-7.794l-15.984,9.229V55.708L188.156,55.708z"/>
+</g>
+<radialGradient id="SVGID_2_" cx="125" cy="125" r="90.8302" gradientUnits="userSpaceOnUse">
+	<stop  offset="0" style="stop-color:#262721"/>
+	<stop  offset="1" style="stop-color:#F8F8F1"/>
+</radialGradient>
+<path fill="url(#SVGID_2_)" stroke="#6EC7DC" stroke-width="2" stroke-miterlimit="10" d="M215.5,77.877h-9.772l-7.071,4.083
+	l11.482,6.629l0.427,0.247h4.935l-0.015,105.206H34.5V55.959H105c0.856,0,2.381,1.032,2.764,1.872l14.146,31.004h34.837l0.427-0.247
+	l11.482-6.629l-7.071-4.083H128.09L116.708,52.93C114.646,48.409,109.611,45,105,45H34.5c-5.514,0-10,4.916-10,10.959v138.082
+	c0,6.043,4.486,10.959,10,10.959h181c5.514,0,10-4.916,10-10.959V88.835C225.5,82.792,221.014,77.877,215.5,77.877z"/>
+</svg>

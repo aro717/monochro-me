@@ -14,12 +14,9 @@ import { store } from './store'
 
 const app = createApp(App)
 app.config.globalProperties.$http = (url, opts) => fetch(url, opts)
-// app.config.globalProperties.$httpPosts = process.env.NODE_ENV === 'production' ? '/blog/api/posts/' : 'http://127.0.0.1:8000/blog/api/posts/'
-// app.config.globalProperties.$httpCategories = process.env.NODE_ENV === 'production' ? '/blog/api/categories/' : 'http://127.0.0.1:8000/blog/api/categories/'
-// app.config.globalProperties.$httpSite = process.env.NODE_ENV === 'production' ? '/sitedetail/api/' : 'http://127.0.0.1:8000/sitedetail/api/'
-app.config.globalProperties.$httpPosts = 'http://127.0.0.1:8000/blog/api/posts/'
-app.config.globalProperties.$httpCategories = 'http://127.0.0.1:8000/blog/api/categories/'
-app.config.globalProperties.$httpSite = 'http://127.0.0.1:8000/sitedetail/api/'
+app.config.globalProperties.$httpPosts = process.env.NODE_ENV === 'production' ? '/blog/api/posts/' : 'http://127.0.0.1:8000/blog/api/posts/'
+app.config.globalProperties.$httpCategories = process.env.NODE_ENV === 'production' ? '/blog/api/categories/' : 'http://127.0.0.1:8000/blog/api/categories/'
+app.config.globalProperties.$httpSite = process.env.NODE_ENV === 'production' ? '/sitedetail/api/' : 'http://127.0.0.1:8000/sitedetail/api/'
 
 // new Vue({
 //   router,
