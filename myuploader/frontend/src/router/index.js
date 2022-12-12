@@ -1,7 +1,7 @@
 // import Vue from 'vue'
 // import VueRouter from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
-import CompositeList from '@/components/CompositeList'
+import CompositeList from '../components/CompositeList'
 
 // Vue.use(VueRouter)
 

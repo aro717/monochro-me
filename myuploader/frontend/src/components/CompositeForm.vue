@@ -32,6 +32,9 @@
 </template>
 
 <script>
+import { h } from 'vue'
+import { ElNotification } from 'element-plus'
+
 export default {
   name: 'composite-form',
   props: {
@@ -77,18 +80,28 @@ export default {
       }).then(response => {
         if (response.ok) {
           return response.json().then(() => {
-            this.$notify({
+            // this.$notify({
+            //   title: 'お知らせ',
+            //   message: this.$createElement('p', { style: 'color: #009' }, this.form.name + 'を追加しました'),
+            //   duration: 2000
+            // })
+            ElNotification({
               title: 'お知らせ',
-              message: this.$createElement('p', { style: 'color: #009' }, this.form.name + 'を追加しました'),
+              message: h('p', { style: 'color: #009' }, this.form.name + 'を追加しました'),
               duration: 2000
             })
             this.$emit('done')
           })
         } else {
           return response.json().then(data => {
-            this.$notify({
+            // this.$notify({
+            //   title: 'お知らせ',
+            //   message: this.$createElement('p', { style: 'color: #900' }, JSON.stringify(data)),
+            //   duration: 2000
+            // })
+            ElNotification({
               title: 'お知らせ',
-              message: this.$createElement('p', { style: 'color: #900' }, JSON.stringify(data)),
+              message: h('p', { style: 'color: #900' }, JSON.stringify(data)),
               duration: 2000
             })
           })
@@ -118,18 +131,28 @@ export default {
       }).then(response => {
         if (response.ok) {
           return response.json().then(() => {
-            this.$notify({
+            // this.$notify({
+            //   title: 'お知らせ',
+            //   message: this.$createElement('p', { style: 'color: #009' }, this.form.name + 'を更新しました'),
+            //   duration: 2000
+            // })
+            ElNotification({
               title: 'お知らせ',
-              message: this.$createElement('p', { style: 'color: #009' }, this.form.name + 'を更新しました'),
+              message: h('p', { style: 'color: #009' }, this.form.name + 'を更新しました'),
               duration: 2000
             })
             this.$emit('done')
           })
         } else {
           return response.json().then(data => {
-            this.$notify({
+            // this.$notify({
+            //   title: 'お知らせ',
+            //   message: this.$createElement('p', { style: 'color: #900' }, JSON.stringify(data)),
+            //   duration: 2000
+            // })
+            ElNotification({
               title: 'お知らせ',
-              message: this.$createElement('p', { style: 'color: #900' }, JSON.stringify(data)),
+              message: h('p', { style: 'color: #900' }, JSON.stringify(data)),
               duration: 2000
             })
           })
@@ -145,17 +168,27 @@ export default {
         }
       }).then(response => {
         if (response.ok) {
-          this.$notify({
+          // this.$notify({
+          //   title: 'お知らせ',
+          //   message: this.$createElement('p', { style: 'color: #009' }, this.selected.data.name + 'を削除しました'),
+          //   duration: 2000
+          // })
+          ElNotification({
             title: 'お知らせ',
-            message: this.$createElement('p', { style: 'color: #009' }, this.selected.data.name + 'を削除しました'),
+            message: h('p', { style: 'color: #009' }, this.selected.data.name + 'を削除しました'),
             duration: 2000
           })
           this.$emit('done')
         } else {
           return response.json().then(data => {
-            this.$notify({
+            // this.$notify({
+            //   title: 'お知らせ',
+            //   message: this.$createElement('p', { style: 'color: #900' }, JSON.stringify(data)),
+            //   duration: 2000
+            // })
+            ElNotification({
               title: 'お知らせ',
-              message: this.$createElement('p', { style: 'color: #900' }, JSON.stringify(data)),
+              message: h('p', { style: 'color: #900' }, JSON.stringify(data)),
               duration: 2000
             })
           })

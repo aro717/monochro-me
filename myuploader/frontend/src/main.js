@@ -2,6 +2,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import installElementPlus from './plugins/element'
 
 // Vue.config.productionTip = false
 
@@ -11,6 +12,8 @@ import router from './router'
 // Vue.prototype.$zipUrlBase = process.env.NODE_ENV === 'production' ? '/uploader/zip/' : 'http://127.0.0.1:8000/uploader/zip/'
 
 const app = createApp(App)
+installElementPlus(app)
+
 app.config.globalProperties.$http = (url, opts) => fetch(url, opts)
 app.config.globalProperties.$endpoint = process.env.NODE_ENV === 'production' ? '/uploader/api/composites/' : 'http://127.0.0.1:8000/uploader/api/composites/'
 app.config.globalProperties.$fileUrlBase = process.env.NODE_ENV === 'production' ? '/uploader' : 'http://127.0.0.1:8000/uploader'

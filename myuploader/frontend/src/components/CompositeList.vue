@@ -1,6 +1,5 @@
 <template>
     <section :key="getKey" id="composites">
-
         <div id="list">
             <!-- 親ディレクトリの表示 -->
             <div v-if="current.parent" class="parent composite-wrapper" :key="current.parent.pk">
@@ -43,11 +42,11 @@ import CompositeForm from './CompositeForm'
 
 export default {
   name: 'composite-list',
-  props: {
-    path: { type: String }
-  },
   components: {
     Composite, CompositeForm
+  },
+  props: {
+    path: { type: String }
   },
   watch: {
     '$route' () {
@@ -96,22 +95,13 @@ export default {
         })
     },
     getCompositeListFromPath (path) {
-      this.$http(this.$endpoint + 'get_composite_from_path/' + path)
+      this.$http(this.$endpoint + 'get_composite_from_path/' + path.join('/'))
         .then(response => {
           return response.json()
         })
         .then(data => {
           this.current = data
         })
-    },
-    move (composite) {
-      const nextPath = this.getNextPath(composite)
-      if (!composite.is_dir) {
-        window.open(this.$fileUrlBase + nextPath, '_blank')
-      } else {
-        this.$router.push(nextPath)
-        this.getCompositeListFromPk(composite.pk)
-      }
     },
     getNextPath (composite) {
       let basePath = this.$route.path
@@ -142,6 +132,15 @@ export default {
         this.getCompositeListFromPk(this.current.parent.pk)
       } else {
         this.getCompositeListTop()
+      }
+    },
+    move (composite) {
+      const nextPath = this.getNextPath(composite)
+      if (!composite.is_dir) {
+        window.open(this.$fileUrlBase + nextPath, '_blank')
+      } else {
+        this.$router.push(nextPath)
+        this.getCompositeListFromPk(composite.pk)
       }
     },
     update (composite) {
@@ -187,12 +186,12 @@ export default {
       this.selected.type = null
       document.getElementById('form').style.padding = '0px'
     }
-  },
-  computed: {
-    getKey () {
-      return `${this.current.pk}`
-    }
   }
+  // computed: {
+  //   getKey () {
+  //     return `${this.current.pk}`
+  //   }
+  // }
 }
 </script>
 
@@ -223,7 +222,7 @@ export default {
         padding: 0px;
     }
 
-    @media (min-width: 1024px) {
+    @media (min-width: 768px) {
         #composites {
             padding-top: 120px;
         }
@@ -237,7 +236,7 @@ export default {
         }
     }
 
-    @media (min-width: 1366px) {
+    @media (min-width: 1024px) {
         #composites {
             padding-top: 120px;
             display: grid;

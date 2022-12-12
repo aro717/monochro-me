@@ -16,38 +16,6 @@ from django.shortcuts import get_object_or_404, render
 from .utils import get_composite, walk_and_write_zip
 
 
-def serve(request, request_path=None):
-    if request_path is None or request_path.endswith('/'):
-        return render(request, 'myuploader/index.html')
-
-    composite = get_composite(request_path)
-    statobj = os.stat(composite.src.path)
-    if not was_modified_since(request.META.get('HTTP_IF_MODIFIED_SINCE'),
-                              statobj.st_mtime, statobj.st_size):
-        return HttpResponseNotModified()
-    content_type, encoding = mimetypes.guess_type(composite.src.path)
-    content_type = content_type or 'application/octet-stream'
-    response = FileResponse(composite.src.file, content_type=content_type)
-    response["Last-Modified"] = http_date(statobj.st_mtime)
-    if encoding:
-        response["Content-Encoding"] = encoding
-    return response
-
-
-def download_zip(request, pk):
-    composite = get_object_or_404(Composite, pk=pk)
-    if not composite.is_dir:
-        return HttpResponseBadRequest('ディレクトリではありません。')
-    if not composite.zip_depth:
-        return HttpResponseBadRequest('ZIPが許可されているディレクトリではありません。')
-
-    response = HttpResponse(content_type='application/zip')
-    response['Content-Disposition'] = f'attachment; filename="{composite.name}.zip"'
-    zip_file = zipfile.ZipFile(response, 'w')
-    walk_and_write(composite, zip_file, composite.zip_depth)
-    return response
-
-
 class CompositeViewSet(viewsets.ModelViewSet):
     queryset = Composite.objects.all()
     serializer_class = CompositeSerializer
@@ -73,3 +41,34 @@ class GetCompositeFromPath(generics.RetrieveAPIView):
         request_path = self.kwargs['request_path']
         composite = get_composite(request_path)
         return composite
+
+
+def serve(request, request_path=None):
+    if request_path is None or request_path.endswith('/'):
+        return render(request, 'myuploader/index.html')
+
+    composite = get_composite(request_path)
+    statobj = os.stat(composite.src.path)
+    if not was_modified_since(request.META.get('HTTP_IF_MODIFIED_SINCE'), statobj.st_mtime):
+        return HttpResponseNotModified()
+    content_type, encoding = mimetypes.guess_type(composite.src.path)
+    content_type = content_type or 'application/octet-stream'
+    response = FileResponse(composite.src.file, content_type=content_type)
+    response["Last-Modified"] = http_date(statobj.st_mtime)
+    if encoding:
+        response["Content-Encoding"] = encoding
+    return response
+
+
+def download_zip(request, pk):
+    composite = get_object_or_404(Composite, pk=pk)
+    if not composite.is_dir:
+        return HttpResponseBadRequest('ディレクトリではありません。')
+    if not composite.zip_depth:
+        return HttpResponseBadRequest('ZIPが許可されているディレクトリではありません。')
+
+    response = HttpResponse(content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="{composite.name}.zip"'
+    zip_file = zipfile.ZipFile(response, 'w')
+    walk_and_write(composite, zip_file, composite.zip_depth)
+    return response

@@ -31,7 +31,7 @@ urlpatterns = [
     path('blog/', include('myblog.urls')),
     path('uploader/', include('myuploader.urls')),
     path('sitedetail/', include('mysitedetail.urls')),
-    path('markdownx/', include(('markdownx.urls', 'markdownx'))),
+    path('markdownx/', include('markdownx.urls')),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps},  name='sitemap'),
     path('', include('myindex.urls')),
 ]

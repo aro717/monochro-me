@@ -6,4 +6,4 @@ __pycache__/
 db.sqlite3
 mysite/settings_local.py
 node_modules/
-material/
+media/

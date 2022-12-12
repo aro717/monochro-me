@@ -37,6 +37,7 @@ export default {
     editableIn: { type: Boolean, default: false },
     zipUrl: { type: String }
   },
+  emits: ['click'],
   methods: {
     onclick () {
       this.$emit('click', this.data)
