@@ -1,5 +1,6 @@
 <template>
     <section :key="getKey" id="composites">
+
         <div id="list">
             <!-- 親ディレクトリの表示 -->
             <div v-if="current.parent" class="parent composite-wrapper" :key="current.parent.pk">
@@ -103,6 +104,15 @@ export default {
           this.current = data
         })
     },
+    move (composite) {
+      const nextPath = this.getNextPath(composite)
+      if (!composite.is_dir) {
+        window.open(this.$fileUrlBase + nextPath, '_blank')
+      } else {
+        this.$router.push(nextPath)
+        this.getCompositeListFromPk(composite.pk)
+      }
+    },
     getNextPath (composite) {
       let basePath = this.$route.path
       if (!basePath.endsWith('/')) {
@@ -132,15 +142,6 @@ export default {
         this.getCompositeListFromPk(this.current.parent.pk)
       } else {
         this.getCompositeListTop()
-      }
-    },
-    move (composite) {
-      const nextPath = this.getNextPath(composite)
-      if (!composite.is_dir) {
-        window.open(this.$fileUrlBase + nextPath, '_blank')
-      } else {
-        this.$router.push(nextPath)
-        this.getCompositeListFromPk(composite.pk)
       }
     },
     update (composite) {
@@ -186,12 +187,12 @@ export default {
       this.selected.type = null
       document.getElementById('form').style.padding = '0px'
     }
+  },
+  computed: {
+    getKey () {
+      return `${this.current.pk}`
+    }
   }
-  // computed: {
-  //   getKey () {
-  //     return `${this.current.pk}`
-  //   }
-  // }
 }
 </script>
 
