@@ -35,6 +35,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'myblog.apps.MyblogConfig',
     'myuploader.apps.MyuploaderConfig',
+    'mylife.apps.MylifeConfig',
     'myindex.apps.MyindexConfig',
     'django.contrib.admin',
     'django.contrib.auth',
