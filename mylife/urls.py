@@ -1,12 +1,16 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
 
 
 app_name = 'mylife'
 
+router = DefaultRouter()
+router.register(r'schedules', views.ScheduleViewSet, basename='schedules')
+router.register(r'categories', views.CategoryViewSet, basename='categories')
+
 urlpatterns = [
-    path('', views.MonthCalendar.as_view(), name='month'),
-    path('month/<int:year>/<int:month>', views.MonthCalendar.as_view(), name='month'),
-    path('week/', views.WeekCalendar.as_view(), name='week'),
-    path('week/<int:year>/<int:month>/<int:day>/', views.WeekCalendar.as_view(), name='week'),
+    path('api/', include(router.urls)),
+    path('', views.Top.as_view(), name='top'),
+    path('<path:path>', views.Top.as_view(), name='top_sub'),
 ]

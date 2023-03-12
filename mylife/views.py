@@ -1,24 +1,20 @@
 from django.views import generic
-from . import mixins
+from rest_framework import viewsets, permissions
+from .models import Schedule, Category
+from .serializers import CategorySerializer, ScheduleSerializer
 
 
-class MonthCalendar(mixins.MonthCalendarMixin, generic.TemplateView):
-    """月間カレンダーを表示するビュー"""
-    template_name = 'mylife/month.html'
-
-    def get_context_date(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        calendar_context = self.get_month_calendar()
-        context.update(calendar_context)
-        return context
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
-class WeekCalendar(mixins.WeekCalendarMixin, generic.TemplateView):
-    """週間カレンダーを表示するビュー"""
-    template_name = 'mylife/week.html'
+class ScheduleViewSet(viewsets.ModelViewSet):
+    queryset = Schedule.objects.all()
+    serializer_class = ScheduleSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def get_context_date(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        calendar_context = self.get_week_calendar()
-        context.update(calendar_context)
-        return context    
+
+class Top(generic.TemplateView):
+    template_name = 'mylife/index.html'

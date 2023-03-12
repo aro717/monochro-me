@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import Render from '@/store/render'
+import Render from '@/assets/render'
 import dayjs from 'dayjs'
 
 export default {
