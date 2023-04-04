@@ -15,10 +15,11 @@ export default {
       default: true
     }
   },
-  setup (_, context) {
+  setup (props, context) {
     const { formatHHmm, loadSchedule, zip } = Calendar()
     const { calendarWeek, getWeekSchedules, previous, next } = week()
     const schedules = ref([])
+    const summaryoverDay = ref('')
 
     const load = async () => {
       schedules.value = await loadSchedule()
@@ -36,9 +37,17 @@ export default {
       return calendarData
     })
 
+    const summaryover = (schedule) => {
+      summaryoverDay.value = schedule
+    }
+
+    const summaryleave = () => {
+      summaryoverDay.value = ''
+    }
+
     context.expose({ load })
 
-    return { schedules, calendar, previous, next, formatHHmm }
+    return { calendar, previous, next, formatHHmm, summaryover, summaryleave, summaryoverDay }
   }
 }
 </script>
@@ -77,9 +86,13 @@ export default {
           <template v-for="(schedule, day) of calendar.week_schedules" :key="schedule">
             <td :class="[calendar.now === day ? 'today-s' : '', calendar.selected_date.today === day ? 'selected-s' : '', 'day']">
               <div v-for="s of schedule" :key="s">
-                {{formatHHmm(s.start_time)}} - {{formatHHmm(s.end_time)}}<br>
-                {{s.summary}} <font color="{{s.category.color}}">{{s.category.name}}</font><br>
-                {{s.description}}
+                {{formatHHmm(s.start_time)}} - {{formatHHmm(s.end_time)}}
+                <!-- {{s.summary}} <font color="{s.category.color}">{{s.category.name}}</font><br> -->
+                <div class="summary" v-on:mouseover="summaryover(s)" v-on:mouseleave="summaryleave"><font color="{s.category.color}">{{s.summary}}</font></div>
+                <!-- {{s.description}} -->
+                <div class="balloon" v-if="summaryoverDay === s" :style="{'--balloon-bg-color': s.category.color}">
+                  {{s.description}}
+                </div>
               </div>
             </td>
           </template>
@@ -118,29 +131,108 @@ export default {
   </div>
 </template>
 
-<style>
-
-.horizontal{
-  display: none;
+<style lang='scss'>
+#headscheduleWeek {
+  height: 2em;
+  background-color: $vcalendar-black;
 }
 
-.vertical{
-  display: table;
-}
-
-@media (min-width: 768px) {
-
-  .horizontal{
+#scheduleWeek {
+  .vertical {
     display: table;
+
+    td:first-of-type {
+      width: 100px;
+    }
+
+    td:last-of-type {
+      text-align: left;
+    }
   }
 
-  .vertical{
+  .horizontal{
     display: none;
   }
 
+  .day {
+    width: 1.7em;
+    height: 1.7em;
+    line-height: 1.7em;
+    margin: 0 auto;
+    vertical-align: top;
+  }
+
+  .today {
+    background: $vcalendar-red;
+    color: #272822;
+  }
+
+  .today-s {
+    background: $vcalendar-red-dark;
+  }
+
+  .selected {
+    outline: 2px solid $vcalendar-blue;
+    outline-offset: -2px;
+  }
+
+  .selected-s {
+    background: $vcalendar-blue-dark;
+  }
 }
 
-@media (min-width: 1024px) {
+@include mq(tb) {
+  #scheduleWeek {
+    .horizontal {
+      display: table;
+      table-layout: fixed;
+
+      tr:last-of-type {
+        font-size: small;
+        text-align: left;
+      }
+
+      td {
+        border: 1px solid $vcalendar-gray;
+      }
+
+      .summary {
+        cursor: default;
+      }
+
+      .balloon {
+        position: absolute;
+        display: inline-block;
+        margin: 1em 0;
+        padding: 5px 10px;
+        min-width: 120px;
+        max-width: 100%;
+        color: $monokai-black;
+        font-size: small;
+        background: var(--balloon-bg-color);
+        box-sizing: border-box;
+        border-radius: 6px;
+      }
+
+      .balloon:before {
+        content: "";
+        position: absolute;
+        top: -24px;
+        left: 25%;
+        margin-left: -15px;
+        border: 12px solid transparent;
+        border-bottom: 13px solid var(--balloon-bg-color);
+      }
+    }
+
+    .vertical{
+      display: none;
+    }
+  }
+
+}
+
+@include mq(md) {
 
 }
 </style>

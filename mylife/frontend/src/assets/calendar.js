@@ -12,6 +12,7 @@ export default function () {
   const router = useRouter()
   const route = useRoute()
 
+  // javascriptのDate()をpythonのdatetime風に変換
   const dateFormat = (date, format) => {
     const y = date.getFullYear()
     const m = ('00' + (date.getMonth() + 1)).slice(-2)
@@ -22,6 +23,8 @@ export default function () {
       month: date.getMonth() + 1,
       day: date.getDate(),
       weekday: date.getDay(),
+      hour: date.getHours(),
+      minute: date.getMinutes(),
       toPathYM: function () {
         return this.year + '/' + this.month
       },
@@ -35,6 +38,34 @@ export default function () {
     return datetime
   }
 
+  // 日付YYYY-MM-DDを簡易datetime風に変換
+  const simpleDateFormat = (date) => {
+    const datelist = date.split('-')
+    const y = datelist[0]
+    const m = datelist[1]
+    const d = datelist[2]
+    const datetime = {
+      today: date,
+      year: parseInt(datelist[0]),
+      month: parseInt(datelist[1]),
+      day: parseInt(datelist[2]),
+      // weekday: date.getDay(),
+      // hour: date.getHours(),
+      // minute: date.getMinutes(),
+      toPathYM: function () {
+        return this.year + '/' + this.month
+      },
+      toPathYMD: function () {
+        return this.year + '/' + this.month + '/' + this.day
+      },
+      toNum: function () {
+        return parseInt(y + m + d)
+      }
+    }
+    return datetime
+  }
+
+  // 時間HH:mm:ssをHH:mmに変換
   const formatHHmm = (str) => {
     let times = []
     if (!str.match(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/)) {
@@ -43,8 +74,9 @@ export default function () {
     return times[0] + ':' + times[1]
   }
 
+  // fetchでjsonを読み込む(認証込み)
   const loadJson = async (url) => {
-    const response = await $http(url)
+    const response = await $http(url, { credentials: 'include' })
     const json = await response.json()
     return json
   }
@@ -59,6 +91,7 @@ export default function () {
     return json
   }
 
+  // fetchでjsonを保存する
   const saveJson = async (formData) => {
     const success = await $http($httpSchedules, {
       credentials: 'include',
@@ -95,10 +128,11 @@ export default function () {
     return success
   }
 
+  // pythonのzip
   const zip = (...arrays) => {
     const length = Math.min(...(arrays.map(arr => arr.length)))
     return new Array(length).fill().map((_, i) => arrays.map(arr => arr[i]))
   }
 
-  return { router, route, weekNames, dateFormat, formatHHmm, loadSchedule, loadCategory, saveJson, zip }
+  return { router, route, weekNames, dateFormat, simpleDateFormat, formatHHmm, loadSchedule, loadCategory, saveJson, zip }
 }

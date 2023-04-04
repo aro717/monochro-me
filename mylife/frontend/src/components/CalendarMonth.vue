@@ -62,6 +62,53 @@ export default {
   </div>
 </template>
 
-<style>
+<style lang='scss'>
+#headcalendarMonth {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  text-align: center;
+  height: 2em;
+  background-color: $vcalendar-black;
+}
 
+#calendarMonth {
+  table {
+    th, td {
+      width: 3em;
+      height: 2em;
+    }
+
+    th {
+      color: $vcalendar-blue-light;
+    }
+
+    // td {
+    //   border-width: 1px 0px;
+    //   border-color: #75715e;
+    //   border-style: solid;
+    // }
+  }
+
+  .day {
+    width: 1.7em;
+    height: 1.7em;
+    line-height: 1.7em;
+    margin: 0 auto;
+    cursor: pointer;
+  }
+
+  .today {
+    background: $vcalendar-red;
+    border-radius: 50%;
+    // color: #272822;
+  }
+
+  .selected {
+    // background: $vcalendar-blue;
+    border-radius: 50%;
+    outline: 2px solid $vcalendar-blue;
+    outline-offset: -2px;
+    // color: #272822;
+  }
+}
 </style>

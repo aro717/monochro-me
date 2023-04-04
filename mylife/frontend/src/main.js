@@ -31,5 +31,4 @@ app.config.globalProperties.$csrfToken = getCookie('csrftoken')
 app.provide('$csrfToken', app.config.globalProperties.$csrfToken)
 
 app.use(ElementPlus)
-
 app.use(store).use(router).mount('#app')

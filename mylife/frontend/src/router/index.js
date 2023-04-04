@@ -3,6 +3,7 @@ import CalendarMonth from '@/components/CalendarMonth.vue'
 import CalendarWeek from '@/components/CalendarWeek.vue'
 import ScheduleWeek from '@/components/ScheduleWeek.vue'
 import ScheduleMonth from '@/components/ScheduleMonth.vue'
+import ScheduleDay from '@/components/ScheduleDay.vue'
 import MyCalendar from '@/components/MyCalendar.vue'
 
 const routes = [
@@ -30,6 +31,11 @@ const routes = [
     path: '/calendar/:year?/:month?/:day?',
     name: 'my_calendar',
     component: MyCalendar
+  },
+  {
+    path: '/day/:year?/:month?/:day?',
+    name: 'schedule_day',
+    component: ScheduleDay
   }
 ]
 

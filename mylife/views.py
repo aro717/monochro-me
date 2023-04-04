@@ -1,6 +1,8 @@
 from django.views import generic
 from rest_framework import viewsets, permissions
 from .models import Schedule, Category
+from .filters import IsPublicOrSuperAll
+from .permissions import IsPublicSchedule, IsSuperUser
 from .serializers import CategorySerializer, ScheduleSerializer
 
 
@@ -13,7 +15,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ScheduleViewSet(viewsets.ModelViewSet):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [IsPublicOrSuperAll]
+    permission_classes = [IsPublicSchedule|IsSuperUser]
 
 
 class Top(generic.TemplateView):

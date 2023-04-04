@@ -7,7 +7,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('pk', 'name')
+        fields = ('pk', 'name', 'color')
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
@@ -16,7 +16,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schedule
-        fields = ('pk', 'date', 'summary', 'description', 'start_time', 'end_time', 'category', 'category_pk')
+        fields = ('pk', 'date', 'summary', 'description', 'start_time', 'end_time', 'category', 'is_public', 'category_pk')
 
     def create(self, validated_data: Dict[str, Any]) -> Schedule:
         category_pk = validated_data.get('category_pk', None)
