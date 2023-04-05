@@ -1,52 +1,91 @@
-<template>
-  <article :key="id" class="container" v-if="post">
-    <header>
-      <nav id="back"><a @click="goBack" title="前ページへ戻る"><img src="@/assets/back.png"></a></nav>
-      <span class="post-date">
-        <span class="post-is_public" v-if="!post.is_public">非公開</span>
-        {{dayjs(post.created_at)}}
-      </span>
-      <h1 class="post-title">{{post.title}}</h1>
-      <p class="post-category" :style="{'color': post.category.color}">{{post.category.name}}</p>
-    </header>
-    <div id="main">
-      <nav id="toc" ref="toc"></nav>
-      <div id="post-main" ref="text" v-html="post.main_text"></div>
-    </div>
-    <div id="relation-posts">
-      <h1 class="title">関連記事</h1>
-      <div class="relation-post" v-for="item in post.relation_posts" :key="item">
-        <h2><router-link :to="{name: 'detail', params: {id: item.id}}">{{item.title}}</router-link></h2>
-        <p>{{ item.lead_text }}</p>
-        <p>{{dayjs(item.created_at)}}</p>
-        <p class="relation-post-category" :style="{'color': post.category.color}">{{item.category.name}}</p>
-      </div>
-    </div>
-    <hr class="divider">
-    <nav id="top"><a @click="scrollTop" title="一番上まで戻る"><img src="@/assets/ue.png"></a></nav>
-  </article>
-</template>
-
 <script>
+import { ref, watch, onMounted, inject, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Render from '@/assets/render'
 import dayjs from 'dayjs'
 
 export default {
   name: 'post',
   props: {
-    id: { type: Number },
-    site: null
+    id: { type: Number }
   },
-  data () {
-    return {
-      post: null,
-      hasBefore: false
+  setup (props, context) {
+    const $http = inject('$http')
+    const $httpPosts = inject('$httpPosts')
+    const $httpSite = inject('$httpSite')
+    const router = useRouter()
+    const route = useRoute()
+    const toc = ref(null)
+    const maintext = ref(null)
+    const post = ref()
+    const hasBefore = false
+
+    const site = async (url) => {
+      const response = await $http($httpSite)
+      const site = await response.json()
+      return site
     }
-  },
-  watch: {
-    '$route' (to, from) {
-      this.fetchItems(to.params.id)
+
+    const goBack = () => {
+      if (hasBefore) {
+        router.go(-1)
+      } else {
+        router.push({ name: 'posts' })
+      }
     }
+
+    const scrollTop = () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    }
+
+    const moveToc = () => {
+      toc.value.innerHTML = maintext.value.firstChild.innerHTML
+    }
+
+    const dayjs_ = (date) => {
+      return dayjs(date).format('YYYY/MM/DD')
+    }
+
+    const move = (item) => {
+      context.emit('relation-post', item)
+    }
+
+    const fetchItems = async (id) => {
+      if (id !== undefined) {
+        const response = await $http(`${$httpPosts}${id}/`, { credentials: 'include' })
+        const data = await response.json()
+        post.value = data
+        document.title = `${data.title} - ${site.title}`
+        document.querySelector('meta[name="description"]').setAttribute('content', data.lead_text)
+        nextTick(() => {
+          Render.hljs.highlightAll()
+          Render.renderMathJax()
+          moveToc()
+        })
+      }
+    }
+
+    watch(route, (to, from) => {
+      fetchItems(to.params.id)
+    })
+
+    onMounted(async () => {
+      const response = await $http(`${$httpPosts}${props.id}/`, { credentials: 'include' })
+      const data = await response.json()
+      post.value = data
+      document.title = `${data.title} - ${site.title}`
+      document.querySelector('meta[name="description"]').setAttribute('content', data.lead_text)
+      nextTick(() => {
+        Render.hljs.highlightAll()
+        Render.renderMathJax()
+        moveToc()
+      })
+    })
+
+    return { post, goBack, scrollTop, dayjs_, move, toc, maintext }
   },
   beforeRouteEnter (to, from, next) {
     next(component => {
@@ -54,89 +93,38 @@ export default {
         component.hasBefore = true
       }
     })
-  },
-  mounted () {
-    this.$http(`${this.$httpPosts}${this.id}/`, { credentials: 'include' })
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        this.post = data
-        document.title = `${data.title} - ${this.site.title}`
-        document.querySelector('meta[name="description"]').setAttribute('content', data.lead_text)
-        this.$nextTick(() => {
-          Render.hljs.highlightAll()
-          Render.renderMathJax()
-          this.moveToc()
-          // this.setRelatePost()
-        })
-      })
-  },
-  methods: {
-    goBack () {
-      if (this.hasBefore) {
-        this.$router.go(-1)
-      } else {
-        this.$router.push({ name: 'posts' })
-      }
-    },
-    scrollTop () {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      })
-    },
-    moveToc () {
-      const innerToc = this.$refs.text.querySelector('div.toc')
-      const cloneToc = innerToc.cloneNode(true)
-      this.$refs.toc.appendChild(cloneToc)
-    },
-    dayjs: function (date) {
-      return dayjs(date).format('YYYY/MM/DD')
-    },
-    move (item) {
-      this.$emit('relation-post', item)
-    },
-    fetchItems (id) {
-      this.$http(`${this.$httpPosts}${id}/`, { credentials: 'include' })
-        .then(response => {
-          return response.json()
-        })
-        .then(data => {
-          this.post = data
-          document.title = `${data.title} - ${this.site.title}`
-          document.querySelector('meta[name="description"]').setAttribute('content', data.lead_text)
-          this.$nextTick(() => {
-            Render.hljs.highlightAll()
-            Render.renderMathJax()
-            this.moveToc()
-          })
-        })
-    }
-    // setRelatePost () {
-    //   let isFound = false // 関連記事の作成
-    //   const pathList = new Set() // URLのpath部分が詰まったセット
-    //   const ulElement = document.createElement('ul')
-
-    //   // 記事中のa要素を1つずつ取り出す
-    //   for (const a of document.querySelectorAll('article.container #post-main p a')) {
-    //     const url = new URL(a.href)
-    //     // ドメインは同じだが、パス部分がこの記事と違っていて、まだ追加していないa要素を関連記事として登録
-    //     if (url.hostname === document.domain && url.pathname !== location.pathname && !pathList.has(url.pathname)) {
-    //       const liElement = document.createElement('li')
-    //       liElement.appendChild(a.cloneNode(true))
-    //       ulElement.appendChild(liElement)
-    //       pathList.add(url.pathname)
-    //       isFound = true
-    //     }
-    //   }
-    //   if (isFound) {
-    //     document.getElementById('relation-posts').appendChild(ulElement)
-    //   }
-    // }
   }
 }
 </script>
+
+<template>
+  <article :key="id" class="container" v-if="post">
+    <header>
+      <nav id="back"><a @click="goBack" title="前ページへ戻る"><img src="@/assets/back.png"></a></nav>
+      <span class="post-date">
+        <span class="post-is_public" v-if="!post.is_public">非公開</span>
+        {{dayjs_(post.created_at)}}
+      </span>
+      <h1 class="post-title">{{post.title}}</h1>
+      <p class="post-category" :style="{'color': post.category.color}">{{post.category.name}}</p>
+    </header>
+    <div id="main">
+      <nav id="toc" ref="toc"></nav>
+      <div id="post-main" ref="maintext" v-html="post.main_text"></div>
+    </div>
+    <div id="relation-posts">
+      <h1 class="title">関連記事</h1>
+      <div class="relation-post" v-for="item in post.relation_posts" :key="item">
+        <h2><router-link :to="{name: 'detail', params: {id: item.id}}">{{item.title}}</router-link></h2>
+        <p>{{ item.lead_text }}</p>
+        <p>{{dayjs_(item.created_at)}}</p>
+        <p class="relation-post-category" :style="{'color': post.category.color}">{{item.category.name}}</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <nav id="top"><a @click="scrollTop" title="一番上まで戻る"><img src="@/assets/ue.png"></a></nav>
+  </article>
+</template>
 
 <style scoped>
 header {

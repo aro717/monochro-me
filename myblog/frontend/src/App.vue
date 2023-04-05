@@ -1,16 +1,3 @@
-<template>
-  <div id="app">
-    <Header :titleimage="site.titleimage"/>
-    <main>
-      <transition appear>
-        <router-view :site="site"/>
-      </transition>
-      <!-- <Side/> -->
-    </main>
-    <Footer/>
-  </div>
-</template>
-
 <script>
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -18,24 +5,25 @@ import Footer from './components/Footer'
 
 export default {
   name: 'app',
-  components: { Header, Footer },
+  components: { Header, Footer }
   // components: { Header, Footer, Side }
-  data () {
-    return {
-      site: null
-    }
-  },
-  created () {
-    this.$http(this.$httpSite)
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        this.site = data[0]
-      })
-  }
 }
 </script>
+
+<template>
+  <div id="app">
+    <Header/>
+    <main>
+      <router-view v-slot="{ Component }">
+        <transition appear>
+          <component :is="Component"/>
+        </transition>
+      </router-view>
+      <!-- <Side/> -->
+    </main>
+    <Footer/>
+  </div>
+</template>
 
 <style>
 * {
@@ -79,7 +67,7 @@ body {
   opacity: 1;
 }
 
-.v-leave, .vleave-active, .v-leave-to {
+.v-leave, .v-leave-active, .v-leave-to {
   opacity: 0;
 }
 

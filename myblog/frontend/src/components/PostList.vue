@@ -1,3 +1,95 @@
+<script>
+import { computed, watch, onMounted, inject, nextTick } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import { UPDATE_POSTS } from '@/store/mutation-types'
+import Render from '@/assets/render'
+import dayjs from 'dayjs'
+
+export default {
+  name: 'post-list',
+  setup () {
+    const $http = inject('$http')
+    const $httpPosts = inject('$httpPosts')
+    const $httpSite = inject('$httpSite')
+    const store = useStore()
+    const router = useRouter()
+    const route = useRoute()
+
+    const site = async (url) => {
+      const response = await $http($httpSite)
+      const site = await response.json()
+      return site
+    }
+
+    const getPosts = async () => {
+      let postURL = $httpPosts
+      const params = route.query
+      const queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&')
+      if (queryString) {
+        postURL += '?' + queryString
+      }
+      const response = await $http(postURL, { credentials: 'include' })
+      const data = await response.json()
+      store.dispatch(UPDATE_POSTS, data)
+      nextTick(() => Render.renderMathJax())
+    }
+
+    getPosts()
+
+    const dayjs_ = (date) => {
+      return dayjs(date).format('YYYY/MM/DD')
+    }
+
+    // ルートパラメータが変化したとき
+    watch(route, () => getPosts())
+
+    const postList = computed(() => store.getters.postList)
+    const postCount = computed(() => store.getters.postCount)
+    const postRangeFirst = computed(() => store.getters.postRangeFirst)
+    const postRangeLast = computed(() => store.getters.postRangeLast)
+    const postCurrentPageNumber = computed(() => store.getters.postCurrentPageNumber)
+    const hasPrevious = computed(() => store.getters.hasPrevious)
+    const hasNext = computed(() => store.getters.hasNext)
+    const getPreviousURL = computed(() => store.getters.getPreviousURL)
+    const getNextURL = computed(() => store.getters.getNextURL)
+
+    const getPostPreviousURL = computed(() => {
+      const url = new URL(getPreviousURL)
+      const keyword = url.searchParams.get('keyword') || ''
+      const category = url.searchParams.get('category') || ''
+      const page = url.searchParams.get('page') || 1
+      return router.resolve({
+        name: 'posts',
+        query: { keyword, category, page }
+      }).route.fullPath
+    })
+
+    const getPostNextURL = computed(() => {
+      const url = new URL(getNextURL)
+      const keyword = url.searchParams.get('keyword') || ''
+      const category = url.searchParams.get('category') || ''
+      const page = url.searchParams.get('page') || 1
+      return router.resolve({
+        name: 'posts',
+        query: { keyword, category, page }
+      }).route.fullPath
+    })
+
+    const getKey = computed(() => {
+      return `${postCurrentPageNumber.value} ${route.query.keyword} ${route.query.category}`
+    })
+
+    onMounted(() => {
+      document.title = site.title
+      document.querySelector('meta[name="description"]').setAttribute('content', site.subtitle)
+    })
+
+    return { dayjs_, postList, postCount, postRangeFirst, postRangeLast, postCurrentPageNumber, hasPrevious, hasNext, getPostPreviousURL, getPostNextURL, getKey }
+  }
+}
+</script>
+
 <template>
   <div :key="getKey" class="container">
     <p id="lead">{{postCount}}件中 {{postRangeFirst}}~{{postRangeLast}}件を一覧表示</p>
@@ -9,7 +101,7 @@
           </figure>
           <span class="post-date">
             <span class="post-is_public" v-if="!post.is_public">非公開</span>
-            {{dayjs(post.created_at)}}
+            {{dayjs_(post.created_at)}}
           </span>
           <h2 class="post-title">{{post.title}}</h2>
           <p class="post-category" :style="{'color': post.category.color}">{{post.category.name}}</p>
@@ -25,84 +117,6 @@
     </nav>
   </div>
 </template>
-
-<script>
-import { mapGetters, mapActions } from 'vuex'
-import { UPDATE_POSTS } from '@/store/mutation-types'
-import Render from '@/assets/render'
-import dayjs from 'dayjs'
-
-export default {
-  name: 'post-list',
-  props: {
-    site: null
-  },
-  // ルートパラメータが変化したとき
-  watch: {
-    '$route' () {
-      this.getPosts()
-    }
-  },
-  // コンポーネントが作成されたとき
-  created () {
-    this.getPosts()
-  },
-  mounted () {
-    document.title = this.site.title
-    document.querySelector('meta[name="description"]').setAttribute('content', this.site.subtitle)
-  },
-  computed: {
-    ...mapGetters([
-      'postList', 'postCount', 'postRangeFirst', 'postRangeLast', 'postCurrentPageNumber', 'hasPrevious', 'hasNext', 'getPreviousURL', 'getNextURL'
-    ]),
-    getPostPreviousURL () {
-      const url = new URL(this.getPreviousURL)
-      const keyword = url.searchParams.get('keyword') || ''
-      const category = url.searchParams.get('category') || ''
-      const page = url.searchParams.get('page') || 1
-      return this.$router.resolve({
-        name: 'posts',
-        query: { keyword, category, page }
-      }).route.fullPath
-    },
-    getPostNextURL () {
-      const url = new URL(this.getNextURL)
-      const keyword = url.searchParams.get('keyword') || ''
-      const category = url.searchParams.get('category') || ''
-      const page = url.searchParams.get('page') || 1
-      return this.$router.resolve({
-        name: 'posts',
-        query: { keyword, category, page }
-      }).route.fullPath
-    },
-    getKey () {
-      return `${this.postCurrentPageNumber} ${this.$route.query.keyword} ${this.$route.query.category}`
-    }
-  },
-  methods: {
-    ...mapActions([UPDATE_POSTS]),
-    getPosts () {
-      let postURL = this.$httpPosts
-      const params = this.$route.query
-      const queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&')
-      if (queryString) {
-        postURL += '?' + queryString
-      }
-      this.$http(postURL, { credentials: 'include' })
-        .then(response => {
-          return response.json()
-        })
-        .then(data => {
-          this[UPDATE_POSTS](data)
-          this.$nextTick(() => Render.renderMathJax())
-        })
-    },
-    dayjs: function (date) {
-      return dayjs(date).format('YYYY/MM/DD')
-    }
-  }
-}
-</script>
 
 <style scoped>
 #lead {

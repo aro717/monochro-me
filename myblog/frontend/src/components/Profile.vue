@@ -1,3 +1,53 @@
+<script>
+import { inject } from 'vue'
+import { useRouter } from 'vue-router'
+import dayjs from 'dayjs'
+
+export default {
+  name: 'profile',
+  setup () {
+    const $http = inject('$http')
+    const $httpSite = inject('$httpSite')
+    const router = useRouter()
+    let age = 0
+    const hasBefore = false
+
+    const site = async (url) => {
+      const response = await $http($httpSite)
+      const site = await response.json()
+      return site
+    }
+
+    const goBack = () => {
+      if (hasBefore) {
+        router.go(-1)
+      } else {
+        router.push({ name: 'posts' })
+      }
+    }
+
+    const dayjs_ = (date) => {
+      return dayjs(date).format('YYYY')
+    }
+
+    const initAge = (birthdate) => {
+      age = dayjs().diff(birthdate, 'year')
+    }
+
+    initAge(site.birthdate)
+
+    return { site, age, goBack, dayjs_ }
+  },
+  beforeRouteEnter (to, from, next) {
+    next(component => {
+      if (from.name) {
+        component.hasBefore = true
+      }
+    })
+  }
+}
+</script>
+
 <template>
   <div id="profile_container" class="container">
     <header>
@@ -9,7 +59,7 @@
       </figure>
       <h2>名前: {{ site.author }}</h2>
       <div id="profile_description">
-        <p>生年: {{ dayjs(site.birthdate) }}</p>
+        <p>生年: {{ dayjs_(site.birthdate) }}</p>
         <!-- <p>年齢: {{ age }}歳</p> -->
         <p>職業: {{ site.job }}</p>
         <p>{{ site.description }}</p>
@@ -27,48 +77,6 @@
     </div>
   </div>
 </template>
-
-<script>
-import dayjs from 'dayjs'
-
-export default {
-  name: 'profile',
-  data () {
-    return {
-      age: 0,
-      hasBefore: false
-    }
-  },
-  props: {
-    site: null
-  },
-  beforeRouteEnter (to, from, next) {
-    next(component => {
-      if (from.name) {
-        component.hasBefore = true
-      }
-    })
-  },
-  created () {
-    this.initAge(this.site.birthdate)
-  },
-  methods: {
-    goBack () {
-      if (this.hasBefore) {
-        this.$router.go(-1)
-      } else {
-        this.$router.push({ name: 'posts' })
-      }
-    },
-    initAge (birthdate) {
-      this.age = dayjs().diff(birthdate, 'year')
-    },
-    dayjs: function (date) {
-      return dayjs(date).format('YYYY')
-    }
-  }
-}
-</script>
 
 <style scoped>
 header {

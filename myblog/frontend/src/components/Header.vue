@@ -1,8 +1,56 @@
+<script>
+import { computed, watch, inject } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import { UPDATE_CATEGORIES } from '@/store/mutation-types'
+
+export default {
+  name: 'site-header',
+  setup () {
+    const router = useRouter()
+    const route = useRoute()
+    const store = useStore()
+    const $http = inject('$http')
+    const $httpSite = inject('$httpSite')
+    const $httpCategories = inject('$httpCategories')
+    let keyword = route.query.keyword || ''
+    let selected = route.query.category || ''
+
+    watch(route, () => {
+      keyword = route.query.keyword || ''
+      selected = route.query.category || ''
+    })
+
+    const site = async (url) => {
+      const response = await $http($httpSite)
+      const site = await response.json()
+      return site
+    }
+
+    const category = async () => {
+      const response = await $http($httpCategories)
+      const data = await response.json()
+      store.dispatch(UPDATE_CATEGORIES, data)
+    }
+
+    category()
+
+    const search = () => {
+      router.push({ name: 'posts', query: { page: 1, keyword: keyword, category: selected } })
+    }
+
+    const categoryList = computed(() => store.getters.categoryList)
+
+    return { keyword, selected, site, search, categoryList }
+  }
+}
+</script>
+
 <template>
   <header>
     <div id="title">
       <router-link id="rl" :to="{name: 'posts'}">
-        <div v-if="titleimage"><img :src="titleimage"/></div>
+        <div v-if="site.titleimage"><img :src="site.titleimage"/></div>
         <div v-else><img src="@/assets/title.png"/></div>
       </router-link>
     </div>
@@ -22,50 +70,6 @@
     </div>
   </header>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex'
-import { UPDATE_CATEGORIES, UPDATE_POSTS } from '@/store/mutation-types'
-
-export default {
-  name: 'site-header',
-  data () {
-    // URL内のGETパラメータを参照
-    return {
-      keyword: this.$route.query.keyword || '',
-      selected: this.$route.query.category || ''
-    }
-  },
-  props: {
-    titleimage: null
-  },
-  watch: {
-    // サイトタイトルクリックでトップページに戻る
-    '$route' () {
-      this.keyword = this.$route.query.keyword || ''
-      this.selected = this.$route.query.category || ''
-    }
-  },
-  created () {
-    this.$http(this.$httpCategories)
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        this[UPDATE_CATEGORIES](data)
-      })
-  },
-  computed: {
-    ...mapGetters(['categoryList'])
-  },
-  methods: {
-    ...mapActions([UPDATE_CATEGORIES, UPDATE_POSTS]),
-    search () {
-      this.$router.push({ name: 'posts', query: { page: 1, keyword: this.keyword, category: this.selected } })
-    }
-  }
-}
-</script>
 
 <style scoped>
 header {

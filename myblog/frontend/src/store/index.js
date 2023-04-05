@@ -1,11 +1,6 @@
-// import Vue from 'vue'
-// import Vuex from 'vuex'
 import { createStore } from 'vuex'
 import { UPDATE_POSTS, UPDATE_CATEGORIES } from './mutation-types'
 
-// Vue.use(Vuex)
-
-// export default new Vuex.Store({
 export const store = createStore({
   strict: process.env.NODE_ENV !== 'production',
   state: {
