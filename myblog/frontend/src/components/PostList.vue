@@ -36,13 +36,12 @@ export default {
     }
 
     getPosts()
+    // ルートパラメータが変化したとき
+    watch(route, () => getPosts())
 
     const dayjs_ = (date) => {
       return dayjs(date).format('YYYY/MM/DD')
     }
-
-    // ルートパラメータが変化したとき
-    watch(route, () => getPosts())
 
     const postList = computed(() => store.getters.postList)
     const postCount = computed(() => store.getters.postCount)
@@ -55,25 +54,25 @@ export default {
     const getNextURL = computed(() => store.getters.getNextURL)
 
     const getPostPreviousURL = computed(() => {
-      const url = new URL(getPreviousURL)
+      const url = new URL(getPreviousURL.value)
       const keyword = url.searchParams.get('keyword') || ''
       const category = url.searchParams.get('category') || ''
       const page = url.searchParams.get('page') || 1
       return router.resolve({
         name: 'posts',
-        query: { keyword, category, page }
-      }).route.fullPath
+        params: { keyword, category, page }
+      }).fullPath
     })
 
     const getPostNextURL = computed(() => {
-      const url = new URL(getNextURL)
+      const url = new URL(getNextURL.value)
       const keyword = url.searchParams.get('keyword') || ''
       const category = url.searchParams.get('category') || ''
       const page = url.searchParams.get('page') || 1
       return router.resolve({
         name: 'posts',
         query: { keyword, category, page }
-      }).route.fullPath
+      }).fullPath
     })
 
     const getKey = computed(() => {
