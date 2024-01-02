@@ -1,5 +1,5 @@
 <script>
-import { inject } from 'vue'
+import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 
@@ -11,12 +11,15 @@ export default {
     const router = useRouter()
     let age = 0
     const hasBefore = false
+    const site = ref([])
 
-    const site = async (url) => {
+    const getSite = async () => {
       const response = await $http($httpSite)
-      const site = await response.json()
-      return site
+      const data = await response.json()
+      site.value = data[0]
     }
+
+    getSite()
 
     const goBack = () => {
       if (hasBefore) {
@@ -34,7 +37,7 @@ export default {
       age = dayjs().diff(birthdate, 'year')
     }
 
-    initAge(site.birthdate)
+    initAge(site.value.birthdate)
 
     return { site, age, goBack, dayjs_ }
   },
