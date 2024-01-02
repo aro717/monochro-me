@@ -7,6 +7,21 @@ export default {
   setup (_, context) {
     const { route, loadCategory, saveJson } = calendar()
     const categories = ref([])
+    const timelists = ref([])
+
+    timelists.value = [
+      { text: '', value: 0 },
+      { text: '1H', value: 1 },
+      { text: '2H', value: 2 },
+      { text: '3H', value: 3 },
+      { text: '4H', value: 4 },
+      { text: '昼休み', value: 5 },
+      { text: '5H', value: 6 },
+      { text: '6H', value: 7 },
+      { text: '7H', value: 8 }
+    ]
+
+    timesets = {}
 
     const load = async () => {
       categories.value = await loadCategory()
@@ -53,6 +68,18 @@ export default {
         data: '',
         type: 'textarea',
         class: 'textarea',
+        errors: ''
+      }
+    },
+    {
+      id_for_label: 'const_time',
+      label_tag: '固定時間',
+      form: {
+        id: 'const_time',
+        data: null,
+        type: 'select',
+        options: timelists,
+        class: 'select',
         errors: ''
       }
     },
@@ -104,6 +131,13 @@ export default {
         context.emit('reload')
       }
     }
+
+    const setTimes = computed(() => {
+      const element = forms.value.find((element) => {
+        return element.id_for_label === 'const_time'
+      })
+      element.form.data
+    })
 
     return { selectedDate, categories, forms, cleanEndTime, add }
   }
