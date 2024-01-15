@@ -20,11 +20,21 @@ export default {
     const post = ref()
     const hasBefore = false
 
-    const site = async (url) => {
+    // const site = async (url) => {
+    //   const response = await $http($httpSite)
+    //   const site = await response.json()
+    //   return site
+    // }
+
+    const site = ref([])
+
+    const getSite = async () => {
       const response = await $http($httpSite)
-      const site = await response.json()
-      return site
+      const data = await response.json()
+      site.value = data[0]
     }
+
+    getSite()
 
     const goBack = () => {
       if (hasBefore) {
@@ -58,7 +68,7 @@ export default {
         const response = await $http(`${$httpPosts}${id}/`, { credentials: 'include' })
         const data = await response.json()
         post.value = data
-        document.title = `${data.title} - ${site.title}`
+        document.title = `${data.title} - ${site.value.title}`
         document.querySelector('meta[name="description"]').setAttribute('content', data.lead_text)
         nextTick(() => {
           Render.hljs.highlightAll()
@@ -76,7 +86,7 @@ export default {
       const response = await $http(`${$httpPosts}${props.id}/`, { credentials: 'include' })
       const data = await response.json()
       post.value = data
-      document.title = `${data.title} - ${site.title}`
+      document.title = `${data.title} - ${site.value.title}`
       document.querySelector('meta[name="description"]').setAttribute('content', data.lead_text)
       nextTick(() => {
         Render.hljs.highlightAll()
@@ -185,7 +195,7 @@ header {
   line-height: 2;
 }
 
-#main >>> div.toc a {
+#toc >>> a {
   font-size: 12px;
   color: #a6e22e;
   text-decoration: none;
