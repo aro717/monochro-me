@@ -1,0 +1,11 @@
+{% extends 'myindex/index.html' %}
+
+{% block content %}
+    <section>
+    {% for link in link_list %}
+        <div class="link">
+            <a href="{{ link.url }}">{{ link.text }}</a>
+        </div>
+    {% endfor %}
+    </section>
+{% endblock %}

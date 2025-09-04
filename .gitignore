@@ -1,0 +1,9 @@
+*.log
+*.pyc
+__pycache__/
+.DS_Store
+.env
+*.sqlite3
+node_modules/
+media/
+frontend/dist/
